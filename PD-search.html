@@ -4,107 +4,98 @@
     <title>Mostly Public Domain Image Search</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            max-width: 1200px;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
-            background: #f5f5f5;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
+            color: #333;
         }
 
         .search-container {
+            max-width: 600px;
+            margin: 40px auto;
             text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        #search-input-container {
-            margin: 20px 0;
-        }
-
-        #search-input {
-            padding: 12px 20px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            width: 50%;
-            min-width: 300px;
-            transition: border-color 0.3s ease;
-        }
-
-        #search-input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            margin: 0 5px;
-        }
-
-        #search-button {
-            background: #4CAF50;
-            color: white;
-        }
-
-        #search-button:hover {
-            background: #45a049;
-        }
-
-        .clear-button {
-            background: #f44336;
-            color: white;
-        }
-
-        .clear-button:hover {
-            background: #da190b;
-        }
-
-        .sources-count {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-
-        .results-container {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+        .search-input {
+            width: 100%;
             padding: 20px;
-        }
-
-        .source-button {
-            background: #2196F3;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: left;
-            cursor: pointer;
+            font-size: 1.2em;
             border: none;
-            transition: transform 0.2s, background 0.2s;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
         }
 
-        .source-button:hover {
-            background: #1976D2;
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 6px 16px rgba(33,150,243,0.2);
             transform: translateY(-2px);
         }
 
-        .source-name {
-            font-weight: bold;
-            margin-bottom: 5px;
+        .search-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
         }
 
-        .source-description {
-            font-size: 0.9em;
-            opacity: 0.9;
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33,150,243,0.3);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .archive-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .archive-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .archive-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .archive-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                margin: 20px auto;
+            }
+            
+            .search-input {
+                padding: 15px;
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
@@ -128,7 +119,7 @@
         }, {
             name: 'Smithsonian Open Access',
             url: 'https://www.si.edu/search/collection-images?edan_q=',
-            params: '&edan_fq=media_usage%3ACC0&oa=1',
+            params: '&edan_fq=media_usage%3ACC0&edan_fq=-unit_code%3ANMNH_Botany&oa=1',
             description: 'Over 3 million images from Smithsonian collections'
         }, {
             name: 'Artvee',
@@ -145,8 +136,7 @@
             description: 'Historical photographs and prints'
         }, {
             name: 'Getty',
-            url: 'https://search.getty.edu/gateway/search?q=',
-            params: '&cat=source&highlights=%22Open%20Content%20Images%22&rows=10&srt=&dir=s&dsp=0&img=0&pg=1',
+            url: 'https://www.getty.edu/art/collection/search?q=',
             description: 'Getty Museum and Research Institute collections'
         }, {
             name: 'Rijksmuseum',
@@ -155,8 +145,8 @@
             description: 'Dutch art and historical objects'
         }, {
             name: 'Digital Commonwealth',
-            url: 'https://www.digitalcommonwealth.org/search?f%5Breuse_allowed_ssi%5D%5B%5D=creative+commons&per_page=20&q=',
-            description: 'Historical collections from Massachusetts'
+            url: 'https://www.digitalcommonwealth.org/search?f%5Breuse_allowed_ssi%5D%5B%5D=creative+commons&q=',
+            description: 'Historical collections from Massachusetts (Creative Commons licensed)'
         }, {
             name: 'NYPL Digital Collections',
             url: 'https://digitalcollections.nypl.org/search/index?utf8=✓&keywords=',
@@ -177,25 +167,30 @@
         }
 
         function performSearch() {
-            const searchTerm = document.getElementById('search-input').value.trim();
-            const resultsDiv = document.getElementById('results');
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.trim();
             
             if (!searchTerm) {
                 alert('Please enter a search term');
                 return;
             }
 
-            resultsDiv.innerHTML = databases.map(db => {
-                const params = typeof db.params === 'function' ? db.params(searchTerm) : (db.params || '');
-                const searchUrl = db.url + encodeURIComponent(searchTerm) + params;
-                
-                return `
-                    <button class="source-button" onclick="window.open('${searchUrl}', '_blank')">
-                        <div class="source-name">${db.name}</div>
-                        <div class="source-description">${db.description}</div>
-                    </button>
-                `;
-            }).join('');
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="results-grid">
+                    ${databases.map(db => {
+                        const params = typeof db.params === 'function' ? db.params(searchTerm) : (db.params || '');
+                        const searchUrl = db.url + encodeURIComponent(searchTerm) + params;
+                        
+                        return `
+                            <div class="archive-card" onclick="window.open('${searchUrl}', '_blank')">
+                                <div class="archive-title">${db.name}</div>
+                                <div class="archive-description">${db.description}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         // Add keyboard support for Enter key
