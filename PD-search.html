@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Mostly Public Domain Image Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             margin: 0;
@@ -97,6 +98,40 @@
                 font-size: 1.1em;
             }
         }
+
+        .suggestions-prompt {
+            color: #666;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .suggestion-container {
+            margin: 10px 0 30px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-tag {
+            padding: 8px 16px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .suggestion-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: #2196F3;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +143,7 @@
             <button id="search-button" onclick="performSearch()">Search</button>
             <button id="clear-button" class="clear-button" onclick="clearSearch()">Clear</button>
         </div>
+        <div id="suggestions" class="suggestion-container"></div>
         <div id="results" class="results-container"></div>
     </div>
 
@@ -119,8 +155,8 @@
         }, {
             name: 'Smithsonian Open Access',
             url: 'https://www.si.edu/search/collection-images?edan_q=',
-            params: '&edan_fq=media_usage%3ACC0&edan_fq=-unit_code%3ANMNH_Botany&oa=1',
-            description: 'Over 3 million images from Smithsonian collections'
+            params: '&edan_fq%5B0%5D=data_source%3A%22Cooper%20Hewitt%2C%20Smithsonian%20Design%20Museum%22%20OR%20data_source%3A%22NMNH%20-%20Education%20%26%20Outreach%22%20OR%20data_source%3A%22NMNH%20-%20Entomology%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Invertebrate%20Zoology%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Mineral%20Sciences%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Birds%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Fishes%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Herpetology%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Mammals%20Division%22%20OR%20data_source%3A%22National%20Air%20and%20Space%20Museum%22%20OR%20data_source%3A%22National%20Museum%20of%20African%20American%20History%20and%20Culture%22%20OR%20data_source%3A%22National%20Museum%20of%20American%20History%22%20OR%20data_source%3A%22National%20Portrait%20Gallery%22%20OR%20data_source%3A%22National%20Postal%20Museum%22%20OR%20data_source%3A%22Smithsonian%20American%20Art%20Museum%22%20OR%20data_source%3A%22Smithsonian%20Gardens%22&edan_fq%5B1%5D=media_usage%3A%22CC0%22&edan_fq%5B2%5D=NOT%20unit_code%3A%22NMNH_Botany%22',
+            description: 'Public domain images from Smithsonian collections'
         }, {
             name: 'Artvee',
             url: 'https://artvee.com/main/?s=',
@@ -199,6 +235,124 @@
                 performSearch();
             }
         });
+
+        // Initialize suggestions immediately
+        const searchSuggestions = [
+            // Objects & Tools
+            "abacus", "accordion", "almanac", "amphora", "anchor", "anvil", "armor", "arrow", "astrolabe", "atlas",
+            "automaton", "axe", "balloon", "banjo", "barrel", "basket", "beacon", "beaker", "bell", "bellows",
+            "bicycle", "binoculars", "blade", "boat", "book", "bottle", "bow", "bowl", "box", "bracelet",
+            "bridge", "brush", "bucket", "button", "cabinet", "cage", "camera", "candle", "cannon", "carousel",
+            "cart", "carving", "casket", "cauldron", "chain", "chair", "chariot", "chest", "chisel", "clock",
+            "coin", "compass", "cradle", "crown", "crystal", "cup", "dagger", "desk", "dial", "diamond",
+            "dice", "dish", "dome", "door", "drum", "fan", "feather", "fence", "flag", "flask",
+            "flute", "fork", "frame", "furnace", "gear", "globe", "gong", "hammer", "harp", "helmet",
+            "hook", "horn", "hourglass", "inkwell", "jar", "jewel", "key", "knife", "ladder", "lamp",
+            "lantern", "loom", "lute", "machine", "mask", "medal", "mirror", "mortar", "needle", "net",
+            
+            // Nature & Animals
+            "albatross", "alligator", "antelope", "ape", "badger", "bat", "bear", "beaver", "bee", "beetle",
+            "bird", "bison", "boar", "buffalo", "butterfly", "camel", "cat", "caterpillar", "cobra", "crab",
+            "crane", "crow", "deer", "dolphin", "dove", "dragon", "eagle", "elephant", "elk", "falcon",
+            "fish", "flamingo", "fox", "frog", "gazelle", "giraffe", "goat", "grasshopper", "hare", "hawk",
+            "hedgehog", "heron", "hippopotamus", "horse", "hummingbird", "hyena", "ibis", "iguana", "jaguar", "jellyfish",
+            "kangaroo", "kingfisher", "koala", "leopard", "lion", "lizard", "llama", "lobster", "lynx", "mammoth",
+            "mantis", "mole", "monkey", "moose", "moth", "mouse", "octopus", "orangutan", "ostrich", "otter",
+            "owl", "oyster", "panda", "panther", "parrot", "peacock", "pelican", "penguin", "phoenix", "pigeon",
+            
+            // Plants & Flora
+            "acorn", "almond", "apple", "bamboo", "bark", "berry", "blossom", "branch", "cactus", "cedar",
+            "cherry", "chestnut", "citrus", "clover", "coconut", "cypress", "daisy", "dandelion", "fern", "fig",
+            "flower", "forest", "fruit", "garden", "grass", "grove", "herb", "ivy", "leaf", "lily",
+            "lotus", "maple", "mushroom", "oak", "olive", "orchid", "palm", "pear", "petal", "pine",
+            "plant", "poppy", "rose", "seed", "sprout", "tree", "tulip", "vine", "willow", "wood",
+            
+            // Architecture & Places
+            "abbey", "altar", "arch", "arena", "barn", "basilica", "castle", "cathedral", "cave", "chapel",
+            "citadel", "city", "column", "cottage", "court", "fortress", "fountain", "garden", "gate", "hall",
+            "harbor", "house", "inn", "island", "labyrinth", "lighthouse", "manor", "mansion", "market", "mill",
+            "mine", "monastery", "monument", "mosque", "museum", "oasis", "palace", "pavilion", "pier", "plaza",
+            "port", "pyramid", "ruins", "sanctuary", "shrine", "spire", "temple", "theater", "tomb", "tower",
+            
+            // Science & Technology
+            "aircraft", "airship", "apparatus", "battery", "boiler", "calculator", "camera", "circuit", "compass", "computer",
+            "conductor", "cylinder", "device", "dynamo", "engine", "generator", "instrument", "invention", "laboratory", "lever",
+            "machine", "magnet", "mechanism", "meter", "microscope", "motor", "pendulum", "phonograph", "pump", "radar",
+            "radio", "reactor", "robot", "rocket", "satellite", "scanner", "sensor", "signal", "telescope", "transformer",
+            
+            // Historical & Cultural
+            "altar", "amulet", "anthem", "armor", "arrow", "artifact", "banner", "battle", "beacon", "blade",
+            "ceremony", "chalice", "chariot", "chronicle", "crown", "crusade", "culture", "custom", "dynasty", "emblem",
+            "empire", "festival", "folklore", "gospel", "herald", "heritage", "history", "icon", "kingdom", "legend",
+            "manuscript", "medal", "memorial", "myth", "oracle", "parade", "relic", "ritual", "robe", "scroll",
+            "seal", "shield", "symbol", "throne", "token", "tradition", "treaty", "tribute", "trophy", "vessel",
+            
+            // Art & Craft
+            "art", "artist", "brush", "canvas", "carving", "casting", "ceramic", "clay", "color", "craft",
+            "design", "drawing", "engraving", "etching", "frame", "fresco", "gallery", "glaze", "icon", "illustration",
+            "image", "ink", "marble", "mosaic", "mural", "paint", "palette", "pattern", "portrait", "pottery",
+            "print", "sculpture", "sketch", "statue", "stone", "studio", "style", "tapestry", "texture", "tile",
+            
+            // Weather & Celestial
+            "aurora", "cloud", "comet", "constellation", "cosmos", "crater", "dawn", "dusk", "eclipse", "galaxy",
+            "horizon", "lightning", "meteor", "moon", "nebula", "nova", "planet", "rainbow", "sky", "star",
+            "storm", "sun", "sunset", "thunder", "universe", "weather", "wind", "zodiac",
+            
+            // Maritime
+            "anchor", "boat", "buoy", "captain", "cargo", "compass", "crew", "deck", "dock", "ferry",
+            "fleet", "galley", "harbor", "hull", "island", "lighthouse", "marina", "mast", "navy", "ocean",
+            "pier", "port", "sail", "sailor", "ship", "shore", "tide", "vessel", "voyage", "wave",
+            
+            // Transportation
+            "airplane", "automobile", "bicycle", "boat", "bridge", "carriage", "cart", "chariot", "coach", "elevator",
+            "engine", "ferry", "locomotive", "motor", "omnibus", "railway", "rocket", "ship", "train", "tram",
+            "trolley", "tunnel", "vehicle", "wagon", "wheel",
+            
+            // Music & Sound
+            "accordion", "bell", "chime", "drum", "echo", "flute", "gong", "guitar", "harmonica", "harp",
+            "horn", "instrument", "lute", "lyre", "melody", "music", "organ", "piano", "song", "sound",
+            "symphony", "trumpet", "tune", "violin", "voice",
+            
+            // Clothing & Accessories
+            "armor", "belt", "boot", "bracelet", "brooch", "cape", "chain", "cloak", "crown", "dress",
+            "garment", "glove", "gown", "hat", "helmet", "jewel", "lace", "mask", "ring", "robe",
+            "scarf", "shoe", "silk", "textile", "uniform",
+            
+            // Professions & Activities
+            "actor", "architect", "artist", "astronomer", "blacksmith", "carpenter", "composer", "craftsman", "dancer", "explorer",
+            "farmer", "hunter", "inventor", "merchant", "musician", "navigator", "painter", "philosopher", "poet", "sailor",
+            "scholar", "scientist", "sculptor", "soldier", "writer",
+            
+            // Abstract Concepts
+            "allegory", "dream", "harmony", "infinity", "justice", "knowledge", "liberty", "memory", "mystery", "nature",
+            "peace", "power", "science", "spirit", "time", "truth", "unity", "virtue", "vision", "wisdom"
+        ];
+
+        function getRandomItems(arr, count) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function showRandomSuggestions() {
+            const suggestions = getRandomItems(searchSuggestions, 5);
+            const suggestionsContainer = document.getElementById('suggestions');
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = `
+                    <div class="suggestions-prompt">Try:</div>
+                    ${suggestions.map(term => 
+                        `<div class="suggestion-tag" 
+                              onclick="document.getElementById('search-input').value='${term}';performSearch()"
+                        >${term}</div>`
+                    ).join('')}
+                `;
+            }
+        }
+
+        // Show suggestions immediately
+        showRandomSuggestions();
+
+        // Also show on DOMContentLoaded for safety
+        document.addEventListener('DOMContentLoaded', showRandomSuggestions);
     </script>
 
     <div style="text-align: center; margin-top: 40px; padding: 20px; color: #666; font-size: 0.9em;">
