@@ -45,12 +45,21 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 20px 0;
+            margin: 20px 10px;
         }
 
         .search-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(33,150,243,0.3);
+        }
+
+        .clear-button {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .clear-button:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .results-grid {
@@ -139,9 +148,11 @@
         <h1>Mostly Public Domain Image Search</h1>
         <p>Search across multiple image collections. Check the results for the license of each image.</p>
         <div id="search-input-container">
-            <input type="text" id="search-input" placeholder="Enter search term...">
-            <button id="search-button" onclick="performSearch()">Search</button>
-            <button id="clear-button" class="clear-button" onclick="clearSearch()">Clear</button>
+            <input type="text" id="search-input" class="search-input" placeholder="Enter search term...">
+            <div style="margin-top: 20px;">
+                <button class="search-button" onclick="performSearch()">Search</button>
+                <button class="search-button clear-button" onclick="clearSearch()">Clear</button>
+            </div>
         </div>
         <div id="suggestions" class="suggestion-container"></div>
         <div id="results" class="results-container"></div>
@@ -155,7 +166,7 @@
         }, {
             name: 'Smithsonian Open Access',
             url: 'https://www.si.edu/search/collection-images?edan_q=',
-            params: '&edan_fq%5B0%5D=data_source%3A%22Cooper%20Hewitt%2C%20Smithsonian%20Design%20Museum%22%20OR%20data_source%3A%22NMNH%20-%20Education%20%26%20Outreach%22%20OR%20data_source%3A%22NMNH%20-%20Entomology%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Invertebrate%20Zoology%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Mineral%20Sciences%20Dept.%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Birds%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Fishes%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Herpetology%20Division%22%20OR%20data_source%3A%22NMNH%20-%20Vertebrate%20Zoology%20-%20Mammals%20Division%22%20OR%20data_source%3A%22National%20Air%20and%20Space%20Museum%22%20OR%20data_source%3A%22National%20Museum%20of%20African%20American%20History%20and%20Culture%22%20OR%20data_source%3A%22National%20Museum%20of%20American%20History%22%20OR%20data_source%3A%22National%20Portrait%20Gallery%22%20OR%20data_source%3A%22National%20Postal%20Museum%22%20OR%20data_source%3A%22Smithsonian%20American%20Art%20Museum%22%20OR%20data_source%3A%22Smithsonian%20Gardens%22&edan_fq%5B1%5D=media_usage%3A%22CC0%22&edan_fq%5B2%5D=NOT%20unit_code%3A%22NMNH_Botany%22',
+            params: '&edan_fq%5B0%5D=data_source%3A%22Cooper%20Hewitt%2C%20Smithsonian%20Design%20Museum%22%20OR%20data_source%3A%22NMNH%20-%20Education%20%26%20Outreach%22%20OR%20data_source%3A%22National%20Air%20and%20Space%20Museum%22%20OR%20data_source%3A%22National%20Museum%20of%20African%20American%20History%20and%20Culture%22%20OR%20data_source%3A%22National%20Museum%20of%20American%20History%22%20OR%20data_source%3A%22National%20Portrait%20Gallery%22%20OR%20data_source%3A%22National%20Postal%20Museum%22%20OR%20data_source%3A%22Smithsonian%20American%20Art%20Museum%22%20OR%20data_source%3A%22Smithsonian%20Gardens%22&edan_fq%5B1%5D=media_usage%3A%22CC0%22&edan_fq%5B2%5D=NOT%20unit_code%3A%22NMNH_Botany%22',
             description: 'Public domain images from Smithsonian collections'
         }, {
             name: 'Getty Research Institute',
@@ -178,8 +189,8 @@
         }, {
             name: 'Rijksmuseum',
             url: 'https://www.rijksmuseum.nl/en/collection/search?query=',
-            params: '&collectionSearchContext=Art&page=1&sortingType=Popularity',
-            description: 'Dutch art and historical objects'
+            params: '&imgonly=True&material=paintings&technique=oil%20paint&p=1&ps=12&toppieces=True',
+            description: 'Dutch art and historical objects (public domain)'
         }, {
             name: 'Digital Commonwealth',
             url: 'https://www.digitalcommonwealth.org/search?f%5Breuse_allowed_ssi%5D%5B%5D=creative+commons&q=',
@@ -187,10 +198,12 @@
         }, {
             name: 'NYPL Digital Collections',
             url: 'https://digitalcollections.nypl.org/search/index?utf8=✓&keywords=',
-            description: 'New York Public Library digital collections'
+            params: '&filters%5Brights%5D=pd',
+            description: 'New York Public Library digital collections (public domain only)'
         }, {
             name: 'Paris Museums',
-            url: 'https://www.parismuseescollections.paris.fr/fr/recherche?keywords=',
+            url: 'https://www.parismuseescollections.paris.fr/en/recherche/image-libre/1?keywords=',
+            params: '&limit=50&sort=score',
             description: 'Open access artworks from Paris museums'
         }, {
             name: 'National Gallery of Art',
@@ -357,7 +370,7 @@
     </script>
 
     <div style="text-align: center; margin-top: 40px; padding: 20px; color: #666; font-size: 0.9em;">
-        Created by <a href="https://themagnet.substack.com" target="_blank" style="color: #2196F3; text-decoration: none;">Mark Frauenfelder</a> with help from Cursor.
+        Vibe coded by <a href="https://themagnet.substack.com" target="_blank" style="color: #2196F3; text-decoration: none;">Mark Frauenfelder</a>.
     </div>
 </body>
 </html>
